@@ -7,5 +7,17 @@
 </head>
 <body>
     <h1>Hello world! Leraning GITHUB.</h1>
+    <button id="btn">This is the toggle button</button>
 </body>
+<script>
+    const bt = document.querySelector("#btn");
+    let count = 0;
+    bt.addEventListener("click", ()=>{
+        // alert("btn was clicked!");
+        count++;
+        console.log(count);
+        if(count % 2 === 0) bt.style.backgroundColor = "green";
+        else bt.style.backgroundColor = "red";
+    })
+</script>
 </html>
