@@ -2,21 +2,42 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout Code') {
             steps {
-                checkout scm
+                echo 'Checking out source code...'
+
+                script {
+                    try {
+                        checkout scm
+                        echo '✅ Checkout completed successfully.'
+                    } catch (Exception e) {
+                        echo '❌ ERROR: Checkout failed!'
+                        echo "Error details: ${e.getMessage()}"
+                        throw e
+                    }
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 echo 'Installing project dependencies...'
-                // Prefer npm ci for CI reproducibility; use bat on Windows agents
+
                 script {
-                    if (isUnix()) {
-                        sh 'npm ci'
-                    } else {
-                        bat 'npm ci'
+                    try {
+                        if (isUnix()) {
+                            sh 'npm ci'
+                        } else {
+                            bat 'npm ci'
+                        }
+
+                        echo '✅ Dependencies installed successfully.'
+
+                    } catch (Exception e) {
+                        echo '❌ ERROR: Dependency installation failed!'
+                        echo "Error details: ${e.getMessage()}"
+                        throw e
                     }
                 }
             }
@@ -25,11 +46,21 @@ pipeline {
         stage('Validate student.json Data & Form Rules') {
             steps {
                 echo 'Starting automated test suite...'
+
                 script {
-                    if (isUnix()) {
-                        sh 'node test-runner.js'
-                    } else {
-                        bat 'node test-runner.js'
+                    try {
+                        if (isUnix()) {
+                            sh 'node test-runner.js'
+                        } else {
+                            bat 'node test-runner.js'
+                        }
+
+                        echo '✅ All test cases passed successfully.'
+
+                    } catch (Exception e) {
+                        echo '❌ ERROR: Test validation failed!'
+                        echo "Error details: ${e.getMessage()}"
+                        throw e
                     }
                 }
             }
@@ -37,11 +68,29 @@ pipeline {
     }
 
     post {
+
         success {
-            echo '🎉 All student.json test cases validated successfully!'
+            echo '''
+            ==========================================
+            🎉 BUILD SUCCESSFUL
+            ==========================================
+            All student.json test cases passed.
+            '''
         }
+
         failure {
-            echo '🚨 One or more test cases failed validation checks.'
+            echo '''
+            ==========================================
+            🚨 BUILD FAILED
+            ==========================================
+            An error occurred during the pipeline.
+            Check the stage above for the exact error.
+            ==========================================
+            '''
+        }
+
+        always {
+            echo "Build result: ${currentBuild.currentResult}"
         }
     }
 }
