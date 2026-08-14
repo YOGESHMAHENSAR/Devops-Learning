@@ -14,7 +14,7 @@ testCases.forEach((data, index) => {
     const isUsernameValid = typeof data.username === 'string' && data.username.trim().length > 0;
     const isEmailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email);
     const isPhoneValid = typeof data.phone === 'string' && data.phone.length === 10 && /^\d+$/.test(data.phone);
-    const validBranches = ['CSE', 'CSE(AI)'];
+    const validBranches = ['CSE', 'CSE(AI)', 'CSE(DS)', 'EE', 'ME'];
     const isBranchValid = validBranches.includes(data.branch);
     const isPasswordValid = typeof data.password === 'string' && data.password.trim().length > 0;
 
